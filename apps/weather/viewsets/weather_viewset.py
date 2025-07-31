@@ -52,8 +52,6 @@ class WeatherEntryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewse
         openweather_service = OpenWeatherService(body)
         weather_data = openweather_service.get_weather()
 
-        print(weather_data)
-
         if weather_data is None:
             return Response({"error": "Dados não encontrados para a cidade especificada."}, status=status.HTTP_400_BAD_REQUEST)
 

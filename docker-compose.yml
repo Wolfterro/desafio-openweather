@@ -29,6 +29,17 @@ services:
   redis:
     image: redis:7
     restart: always
+  
+  celery:
+    build: .
+    command: celery -A desafio_openweather worker -l info
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    depends_on:
+      - web
+      - redis
 
 volumes:
   postgres_data:

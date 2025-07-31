@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
 PROJECT_APPS = [
     'apps.weather',
+    'apps.logs',
 ]
 
 INSTALLED_APPS += PROJECT_APPS
@@ -102,6 +103,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+
+# Celery Settings
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/1")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/1")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
 
 # Internacionalização
 LANGUAGE_CODE = 'pt-br'
