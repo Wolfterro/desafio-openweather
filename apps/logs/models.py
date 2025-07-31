@@ -16,8 +16,28 @@ class APILog(models.Model):
         verbose_name_plural = "API Logs"
     
     def __str__(self):
-        return f"[{self.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {self.log.get('method')} {self.log.get('status')}"
+        log = self.log
+        if(type(self.log) == str):
+            log = json.loads(self.log)
+
+        return f"[{self.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {log.get('method')} {log.get('status')}"
 
     @property
     def to_json(self):
-        return json.dumps(self.log, ensure_ascii=False)
+        return json.dumps(self.log, ensure_ascii=False, indent=4)
+    
+    @property
+    def method(self):
+        log = self.log
+        if(type(self.log) == str):
+            log = json.loads(self.log)
+        
+        return log.get('method', '-')
+    
+    @property
+    def status(self):
+        log = self.log
+        if(type(self.log) == str):
+            log = json.loads(self.log)
+        
+        return log.get('status', '-')
