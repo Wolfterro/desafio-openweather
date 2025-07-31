@@ -26,7 +26,7 @@ class WeatherEntryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewse
         request_body=CreateWeatherEntrySerializer,
         responses={
             201: WeatherEntrySerializer, 
-            400: openapi.Response(description="Campos 'city', 'state' e 'country' são obrigatórios.")
+            400: openapi.Response(description="Dados não encontrados para a cidade especificada.")
         }
     )
     def create(self, request, *args, **kwargs):
