@@ -1,19 +1,23 @@
+import json
+
+from django.utils.timezone import is_aware
+from uuid import UUID
+from datetime import datetime
 from django.db import models
 
 # Create your models here.
 # ------------------------
-class StructuredLogs(models.Model):
-    request_data = models.JSONField(null=True, blank=True)
-    response_data = models.JSONField()
-    url = models.URLField()
-    status_code = models.IntegerField()
-    
-    request_date = models.DateTimeField()
+class APILog(models.Model):
+    log = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Log"
-        verbose_name_plural = "Logs"
+        verbose_name = "API Log"
+        verbose_name_plural = "API Logs"
     
     def __str__(self):
-        return f"[{self.request_date.strftime('%Y-%m-%d %H:%M:%S')}] {self.url} - {self.status_code}"
+        return f"[{self.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {self.log.get('method')} {self.log.get('status')}"
+
+    @property
+    def to_json(self):
+        return json.dumps(self.log, ensure_ascii=False)

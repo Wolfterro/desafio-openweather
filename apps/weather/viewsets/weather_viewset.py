@@ -8,6 +8,9 @@ from apps.weather.models import WeatherEntry
 from apps.weather.serializers import WeatherEntrySerializer
 from apps.weather.serializers.create_weather_entry_serializer import CreateWeatherEntrySerializer, CreateWeatherEntrySerializerError400
 from apps.weather.services.openweather_service import OpenWeatherService
+import structlog
+
+logger = structlog.get_logger()
 
 class WeatherEntryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = WeatherEntry.objects.all().order_by('-created_at')

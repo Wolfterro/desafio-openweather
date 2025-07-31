@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+
+import structlog
+from structlog.stdlib import LoggerFactory
+from structlog.contextvars import merge_contextvars
+
 from dotenv import load_dotenv
 
 # Carrega as variáveis do .env
@@ -24,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
+    'django_structlog',
 ]
 
 PROJECT_APPS = [
@@ -34,6 +40,8 @@ PROJECT_APPS = [
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE = [
+    'django_structlog.middlewares.RequestMiddleware',
+    'apps.logs.middlewares.CustomLoggingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -105,10 +113,64 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Celery Settings
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/1")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/1")
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/0"
+CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+
+# Logging Settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'json': {
+            '()': 'structlog.stdlib.ProcessorFormatter',
+            'processor': structlog.processors.JSONRenderer(),
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'json',
+        },
+        'db': {
+            'level': 'INFO',
+            'class': 'apps.logs.handlers.StructuredLogHandler',
+            'formatter': 'json',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django_structlog': {
+            'handlers': ['console', 'db'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'custom_logging': {
+            'handlers': ['db'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Structlog Settings
+structlog.configure(
+    processors=[
+        merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.format_exc_info,
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    context_class=dict,
+    logger_factory=LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
 
 # Internacionalização
 LANGUAGE_CODE = 'pt-br'
