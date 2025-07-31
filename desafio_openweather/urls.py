@@ -23,7 +23,6 @@ from drf_yasg import openapi
 
 from apps.weather.viewsets import WeatherEntryViewSet
 
-
 schema_view = get_schema_view(
    openapi.Info(
       title="Desafio - OpenWeather API",
@@ -32,7 +31,8 @@ schema_view = get_schema_view(
       contact=openapi.Contact(email="wolfgang.almeida@yahoo.com"),
    ),
    public=True,
-   permission_classes=(permissions.AllowAny,),
+   permission_classes=[permissions.AllowAny],
+   authentication_classes=[],
 )
 
 router = routers.DefaultRouter()

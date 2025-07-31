@@ -1,1 +1,3 @@
 from apps.weather.serializers.weather_serializer import WeatherEntrySerializer
+from apps.weather.serializers.create_weather_entry_serializer import CreateWeatherEntrySerializer
+from apps.weather.serializers.create_weather_entry_serializer import CreateWeatherEntrySerializerError400

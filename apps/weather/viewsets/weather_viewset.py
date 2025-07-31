@@ -1,14 +1,15 @@
 from django.core.cache import cache
-from rest_framework import viewsets
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from apps.weather.models import WeatherEntry
 from apps.weather.serializers import WeatherEntrySerializer
+from apps.weather.serializers.create_weather_entry_serializer import CreateWeatherEntrySerializer, CreateWeatherEntrySerializerError400
 from apps.weather.services.openweather_service import OpenWeatherService
 
-class WeatherEntryViewSet(viewsets.ModelViewSet):
+class WeatherEntryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = WeatherEntry.objects.all().order_by('-created_at')
     serializer_class = WeatherEntrySerializer
     throttle_classes = [ScopedRateThrottle]
@@ -21,6 +22,13 @@ class WeatherEntryViewSet(viewsets.ModelViewSet):
         
         return queryset
 
+    @swagger_auto_schema(
+        request_body=CreateWeatherEntrySerializer,
+        responses={
+            201: WeatherEntrySerializer, 
+            400: openapi.Response(description="Campos 'city', 'state' e 'country' são obrigatórios.")
+        }
+    )
     def create(self, request, *args, **kwargs):
         body = request.data
         city = body.get('city')
