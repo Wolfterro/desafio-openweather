@@ -1,0 +1,1 @@
+from apps.weather.viewsets.weather_viewset import WeatherEntryViewSet

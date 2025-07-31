@@ -21,6 +21,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from apps.weather.viewsets import WeatherEntryViewSet
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -34,7 +36,7 @@ schema_view = get_schema_view(
 )
 
 router = routers.DefaultRouter()
-# router.register(r'weather', WeatherViewSet)
+router.register(r'weather', WeatherEntryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

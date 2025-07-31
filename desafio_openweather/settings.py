@@ -88,7 +88,13 @@ CACHES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'weather': '10/minute',
+    }
 }
 
 # Senhas
@@ -112,3 +118,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Swagger Settings
+SWAGGER_USE_COMPAT_RENDERERS = False
